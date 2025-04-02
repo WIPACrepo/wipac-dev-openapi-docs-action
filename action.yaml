@@ -69,7 +69,7 @@ runs:
             -v $PWD:/local \
             openapitools/openapi-generator-cli generate \
             --skip-validate-spec \
-            -i /local/wms/$REST_OPENAPI_SPEC_FPATH \
+            -i /local/${{ inputs.openapi_fpath }} \
             -g markdown \
             -o /local/$outdir
         sudo chmod -R +777 $outdir  # needed since the 'rm' above wiped previous ownership & now container owns it all
