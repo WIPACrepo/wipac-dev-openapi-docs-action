@@ -62,9 +62,12 @@ runs:
         set -euo pipefail
         echo "now: $(date -u +"%Y-%m-%dT%H:%M:%S.%3N")"
         
+        #
+        # Generate Docs
+        #
+        
         outdir=${{ inputs.outdir }}
         git rm -r $outdir || true
-        # generate
         docker run --rm \
             -v $PWD:/local \
             openapitools/openapi-generator-cli generate \
@@ -82,7 +85,11 @@ runs:
 
         cat "$outdir/README.md"
 
-        # get mapping -- method (link/header) and request dest
+        #
+        # Edit Docs
+        #
+
+        # get mapping to use later -- method (link/header) and request dest
         declare -A mapping  # associative array (like python dict)
         in_table=false
         while IFS= read -r line; do
@@ -115,7 +122,7 @@ runs:
             mapping["$method_col_attr"]="$http_request_col_attr"
         done < "$outdir/README.md"
 
-        # Now you can access the dictionary and process it as needed
+        # Now edit
         for method_col_attr in "${!mapping[@]}"; do
             http_request_col_attr="${mapping[$method_col_attr]}"
             echo "$method_col_attr -> $http_request_col_attr"
